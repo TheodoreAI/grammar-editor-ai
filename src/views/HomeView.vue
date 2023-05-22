@@ -22,6 +22,7 @@
           class="form-input p-3 m-2"
           maxlength="100"
           type="text"
+          placeholder="Queries could be 'Please correct the following sentence: i assisted with the grammar editing,'"
           v-model="newMessage"
         />
       </div>
