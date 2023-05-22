@@ -75,6 +75,7 @@ export default {
     },
   },
 
+
   created() {
     console.log("HomeView created");
     this.callAPIUsingFetch(this.messages);
