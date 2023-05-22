@@ -9,9 +9,15 @@
     </div>
     <!-- content -->
     <div class="card">
-      <p>{{ messages }}</p>
       <div class="card-body row text-center">
+        <button
+          class="btn btn-secondary"
+          @click.prevent="callAPIUsingFetch(messages)"
+        >
+          Call API
+        </button>
         <p class="fw-bold">Grammar Editor Assistant: {{ content }}</p>
+        <!-- characters remaining -->
         <textarea
           class="form-input p-3 m-2"
           maxlength="100"
@@ -22,6 +28,11 @@
       <button class="btn btn-primary p-3" @click.prevent="sendNewMessage()">
         Send
       </button>
+    </div>
+    <div class="card-footer">
+      <label class="lead"
+        >Characters remaining: {{ charactersRemaining }}</label
+      >
     </div>
   </div>
 </template>
@@ -40,6 +51,11 @@ export default {
       newMessage: "",
       loading: true,
     };
+  },
+  computed: {
+    charactersRemaining() {
+      return 100 - this.newMessage.length;
+    },
   },
   methods: {
     // The following function is called when the user clicks the button
@@ -75,10 +91,9 @@ export default {
     },
   },
 
-
   created() {
     console.log("HomeView created");
-    this.callAPIUsingFetch(this.messages);
+    // this.callAPIUsingFetch(this.messages);
   },
 };
 </script>
