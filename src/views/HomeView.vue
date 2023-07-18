@@ -3,37 +3,50 @@
     <img alt="Vue logo" src="../assets/logo.png" />
   </div>
   <div class="app">
-    <!-- loading -->
-    <div class="loading">
-      <i class="fas fa-spinner fa-spin"></i>
-    </div>
     <!-- content -->
-    <div class="card">
-      <div class="card-body row text-center">
-        <button
-          class="btn btn-secondary"
-          @click.prevent="callAPIUsingFetch(messages)"
-        >
-          Call API
-        </button>
-        <p class="fw-bold">Grammar Editor Assistant: {{ content }}</p>
+    <div class="container">
+      <div class="card">
+        <div class="card-header text-center">
+          <p class="lead">Please turn on the AI before you start typing.</p>
+          <button
+            class="btn btn-success"
+            @click.prevent="callAPIUsingFetch(messages)"
+          >
+            ON
+          </button>
+        </div>
+        <div class="card-body">
+          <!-- loading -->
+          <div v-if="loading" class="d-flex justify-content-center m-3">
+            <div class="spinner-border text-success" role="status">
+              <span class="sr-only"></span>
+            </div>
+          </div>
+          <div v-else>
+            <p class="lead">Grammar Editor Assistant</p>
+            <p class="fw-bold">{{ content }}</p>
+          </div>
+        </div>
         <!-- characters remaining -->
-        <textarea
-          class="form-input p-3 m-2"
-          maxlength="100"
-          type="text"
-          placeholder="Queries could be 'Please correct the following sentence: i assisted with the grammar editing,'"
-          v-model="newMessage"
-        />
+        <div class="form-floating m-3">
+          <textarea
+            class="form-control"
+            id="userInput"
+            maxlength="200"
+            type="text"
+            v-model="newMessage"
+          />
+          <label for="userInput">Fix the following</label>
+        </div>
+        <button class="btn btn-primary p-3" @click.prevent="sendNewMessage()">
+          Send
+        </button>
       </div>
-      <button class="btn btn-primary p-3" @click.prevent="sendNewMessage()">
-        Send
-      </button>
-    </div>
-    <div class="card-footer">
-      <label class="lead"
-        >Characters remaining: {{ charactersRemaining }}</label
-      >
+      <div class="card-footer">
+        <label class="lead"
+          >Characters remaining: {{ charactersRemaining }}</label
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -50,12 +63,13 @@ export default {
       messages: trainingData,
       content: "",
       newMessage: "",
-      loading: true,
+      loading: false,
+      maxCharacterLength: 200,
     };
   },
   computed: {
     charactersRemaining() {
-      return 100 - this.newMessage.length;
+      return this.maxCharacterLength - this.newMessage.length;
     },
   },
   methods: {
@@ -63,6 +77,8 @@ export default {
     // it will call the API using the Fetch API
     // which will return a response in JSON format
     callAPIUsingFetch(messages) {
+      this.loading = true; // Set loading boolean to true before making the API call
+
       fetch("https://my-ai-server.herokuapp.com/calling-grammar-editor", {
         method: "POST",
         headers: {
@@ -77,11 +93,14 @@ export default {
         .then((data) => {
           console.log("Success:", data);
           this.content = data.response;
+          this.loading = false; // Set loading boolean to false after receiving the response
         })
         .catch((error) => {
           console.error("Error:", error);
+          this.loading = false; // Set loading boolean to false if an error occurs
         });
     },
+
     // Sends a newMessage to the API that comes from the user input with v-model
     // make sure it is still the same thread of conversation with the assistant
     // and then call the API again to get the response
